@@ -5,31 +5,30 @@ import random
 random.seed(42)
 
 start_date = date.today()
+TOTAL_SEATS = 10
+DAYS = 10
 
-# Generate data for 10 days
-dates = [(start_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(10)]
+dates = [(start_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(DAYS)]
 
 time_slots = [f"{hour}:00-{hour+1}:00" for hour in range(8, 20)]  # 8 to 19
 
 schedule = []
 for date in dates:
     for time in time_slots:
-        # Randomly decide if the hall is taken (30% chance)
-        hall = "Taken" if random.random() < 0.3 else "Free"
+        hall_free = 1 if random.random() > 0.3 else 0
 
-        # Randomly decide if the room is taken (50% chance)
-        room = "Taken" if random.random() < 0.5 else "Free"
+        room_free = 1 if random.random() > 0.5 else 0
 
-        # Randomly decide number of seats taken (0 to 10)
         seats_taken = random.randint(0, 10)
+        seats_free = TOTAL_SEATS - seats_taken
 
         schedule.append(
             {
                 "Date": date,
                 "Time Slot": time,
-                "Conference Hall": hall,
-                "Meeting Room": room,
-                "Coworking Seats Taken": seats_taken,
+                "Conference Hall Available": hall_free,
+                "Meeting Room Available": room_free,
+                "Coworking Seats Available": seats_free,
             }
         )
 
