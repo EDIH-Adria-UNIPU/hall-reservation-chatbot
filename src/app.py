@@ -1,9 +1,11 @@
 import streamlit as st
 from openai import OpenAI
 import os
+import json
 from datetime import datetime
 
 from utils import prepare_prompt
+from data_manager import DataManager
 
 st.title("IDA - chatbot za rezevaciju dvorana")
 
@@ -24,8 +26,42 @@ if "messages" not in st.session_state:
     st.session_state.messages.append({"role": "system", "content": system_message})
 
     st.session_state.messages.append(
-        {"role": "assistant", "content": "Pozdrav! Ja sam asistent za rezervacije u Coworking Pula. Mogu vam pomoći rezervirati dvoranu, sobu za sastanke ili coworking prostor. Koji prostor vas zanima?"}
+        {
+            "role": "assistant",
+            "content": "Pozdrav! Ja sam asistent za rezervacije u Coworking Pula. Mogu vam pomoći rezervirati dvoranu, sobu za sastanke ili coworking prostor. Koji prostor vas zanima?",
+        }
     )
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "check_availability",
+            "description": "Filters availability by a specific date and a time range defined by start and end hours",
+            "strict": True,
+            "parameters": {
+                "type": "object",
+                "required": ["date", "start_hour", "end_hour"],
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "description": "The date for which availability is being checked, formatted as YYYY-MM-DD",
+                    },
+                    "start_hour": {
+                        "type": "number",
+                        "description": "The starting hour for the time range (0-23)",
+                    },
+                    "end_hour": {
+                        "type": "number",
+                        "description": "The ending hour for the time range (0-23)",
+                    },
+                },
+                "required": ["date", "start_hour", "end_hour"],
+                "additionalProperties": False,
+            },
+        },
+    }
+]
 
 for msg in st.session_state.messages:
     if msg["role"] != "system":  # Only display non-system messages
@@ -41,8 +77,21 @@ if prompt := st.chat_input():
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
     response = client.chat.completions.create(
-        model="gpt-4o-mini", messages=st.session_state.messages
+        model="gpt-4o-mini", messages=st.session_state.messages, tools=tools
     )
-    msg = response.choices[0].message.content
-    st.session_state.messages.append({"role": "assistant", "content": msg})
-    st.chat_message("assistant").write(msg)
+
+    print(response.choices[0].message)
+
+    if response.choices[0].message.content is not None:
+        msg = response.choices[0].message.content
+        st.session_state.messages.append({"role": "assistant", "content": msg})
+        st.chat_message("assistant").write(msg)
+    elif response.choices[0].message.tool_calls:
+        tool_call = response.choices[0].message.tool_calls[0]
+        arguments = json.loads(tool_call.function.arguments)
+        print("Function called with arguments:", arguments)
+        date = arguments.get("date")
+        start_hour = arguments.get("start_hour")
+        end_hour = arguments.get("end_hour")
+    else:
+        raise ValueError("No response from OpenAI API")
