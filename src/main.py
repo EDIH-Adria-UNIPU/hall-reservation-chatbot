@@ -1,8 +1,6 @@
 import streamlit as st
 from openai import OpenAI
 
-print(st.secrets["OPENAI_API_KEY"])
-
 st.title("IDA - chatbot za rezevaciju dvorana")
 
 if "messages" not in st.session_state:
