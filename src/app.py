@@ -1,15 +1,26 @@
 import streamlit as st
 from openai import OpenAI
+import os
+
+from utils import prepare_prompt
 
 st.title("IDA - chatbot za rezevaciju dvorana")
 
+# Add initial system and assistant messages
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [
-        {"role": "assistant", "content": "How can I help you?"}
-    ]
+    st.session_state.messages = []
+    system_message = prepare_prompt(
+        os.path.join("src", "prompts", "system_message.txt")
+    )
+    st.session_state.messages.append({"role": "system", "content": system_message})
+
+    st.session_state.messages.append(
+        {"role": "assistant", "content": "Kako vam mogu pomoći?"}
+    )
 
 for msg in st.session_state.messages:
-    st.chat_message(msg["role"]).write(msg["content"])
+    if msg["role"] != "system":  # Only display non-system messages
+        st.chat_message(msg["role"]).write(msg["content"])
 
 if prompt := st.chat_input():
     if not st.secrets["OPENAI_API_KEY"]:
