@@ -9,6 +9,8 @@ from data_manager import DataManager
 
 st.title("IDA - chatbot za rezevaciju dvorana")
 
+manager = DataManager()
+
 # Add initial system and assistant messages
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -80,18 +82,43 @@ if prompt := st.chat_input():
         model="gpt-4o-mini", messages=st.session_state.messages, tools=tools
     )
 
-    print(response.choices[0].message)
-
     if response.choices[0].message.content is not None:
         msg = response.choices[0].message.content
         st.session_state.messages.append({"role": "assistant", "content": msg})
         st.chat_message("assistant").write(msg)
     elif response.choices[0].message.tool_calls:
+        print("\nFunction call detected:", response.choices[0].message)
         tool_call = response.choices[0].message.tool_calls[0]
         arguments = json.loads(tool_call.function.arguments)
-        print("Function called with arguments:", arguments)
+        print("\nFunction call with arguments:", arguments)
         date = arguments.get("date")
         start_hour = arguments.get("start_hour")
         end_hour = arguments.get("end_hour")
+
+        result = manager.check_availability(date, start_hour, end_hour)
+
+        print("\nAvailable slots:", result)
+
+        # Add message with tool call
+        st.session_state.messages.append(response.choices[0].message)
+
+        # Add message with tool output
+        st.session_state.messages.append(
+            {
+                "role": "tool",
+                "content": str(result),
+                "tool_call_id": tool_call.id,
+            }
+        )
+
+        # Make another call to OpenAI API to continue the conversation
+        response = client.chat.completions.create(
+            model="gpt-4o-mini", messages=st.session_state.messages, tools=tools
+        )
+
+        if response.choices[0].message.content is not None:
+            msg = response.choices[0].message.content
+            st.session_state.messages.append({"role": "assistant", "content": msg})
+            st.chat_message("assistant").write(msg)
     else:
         raise ValueError("No response from OpenAI API")
