@@ -1,6 +1,7 @@
 import streamlit as st
 from openai import OpenAI
 import os
+from datetime import datetime
 
 from utils import prepare_prompt
 
@@ -9,8 +10,16 @@ st.title("IDA - chatbot za rezevaciju dvorana")
 # Add initial system and assistant messages
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+    # Get current date and time
+    current_datetime = datetime.now()
+    current_date = current_datetime.strftime("%Y-%m-%d")
+    current_time = current_datetime.strftime("%H:%M")
+
     system_message = prepare_prompt(
-        os.path.join("src", "prompts", "system_message.txt")
+        os.path.join("src", "prompts", "system_message.txt"),
+        date=current_date,
+        time=current_time,
     )
     st.session_state.messages.append({"role": "system", "content": system_message})
 
