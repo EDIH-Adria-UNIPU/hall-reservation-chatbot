@@ -24,12 +24,13 @@ if "messages" not in st.session_state:
     st.session_state.messages.append({"role": "system", "content": system_message})
 
     st.session_state.messages.append(
-        {"role": "assistant", "content": "Kako vam mogu pomoći?"}
+        {"role": "assistant", "content": "Pozdrav! Ja sam asistent za rezervacije u Coworking Pula. Mogu vam pomoći rezervirati dvoranu, sobu za sastanke ili coworking prostor. Koji prostor vas zanima?"}
     )
 
 for msg in st.session_state.messages:
     if msg["role"] != "system":  # Only display non-system messages
         st.chat_message(msg["role"]).write(msg["content"])
+
 
 if prompt := st.chat_input():
     if not st.secrets["OPENAI_API_KEY"]:
