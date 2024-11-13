@@ -6,6 +6,7 @@ from datetime import datetime
 
 from utils import prepare_prompt, get_available_tools
 from data_manager import DataManager
+from functions import ChatFunctions
 
 st.title("IDA - chatbot za rezevaciju dvorana")
 
@@ -40,6 +41,27 @@ for msg in st.session_state.messages:
         st.chat_message(msg["role"]).write(msg["content"])
 
 
+def handle_function_call(manager, function_name, arguments):
+    if function_name == ChatFunctions.CHECK_AVAILABILITY.value:
+        result = manager.check_availability(
+            arguments.get("date"),
+            arguments.get("start_hour"),
+            arguments.get("end_hour"),
+        )
+        print("\nAvailable slots:", result)
+    elif function_name == ChatFunctions.MAKE_RESERVATION.value:
+        result = manager.make_reservation(
+            arguments.get("area_type"),
+            arguments.get("date"),
+            arguments.get("start_hour"),
+            arguments.get("end_hour"),
+        )
+        print(result)
+    else:
+        raise ValueError(f"Function '{function_name}' not found.")
+    return result
+
+
 if prompt := st.chat_input():
     if not st.secrets["OPENAI_API_KEY"]:
         st.info("Please add your OpenAI API key to continue.")
@@ -63,24 +85,7 @@ if prompt := st.chat_input():
         arguments = json.loads(tool_call.function.arguments)
 
         print(f"\nCall function {function_name} with arguments: {arguments}")
-
-        if function_name == "check_availability":
-            result = manager.check_availability(
-                arguments.get("date"),
-                arguments.get("start_hour"),
-                arguments.get("end_hour"),
-            )
-            print("\nAvailable slots:", result)
-        elif function_name == "make_reservation":
-            result = manager.make_reservation(
-                arguments.get("area_type"),
-                arguments.get("date"),
-                arguments.get("start_hour"),
-                arguments.get("end_hour"),
-            )
-            print(result)
-        else:
-            raise ValueError(f"Function '{function_name}' not found.")
+        result = handle_function_call(manager, function_name, arguments)
 
         # Add message with tool call
         st.session_state.messages.append(response.choices[0].message)

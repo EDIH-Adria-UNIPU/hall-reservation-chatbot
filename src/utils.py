@@ -1,3 +1,5 @@
+from functions import ChatFunctions
+
 def prepare_prompt(prompt_template_path: str, **kwargs) -> str:
     """
     Replace the placeholders in the prompt template with the given values.
@@ -43,7 +45,7 @@ def get_available_tools() -> list:
         {
             "type": "function",
             "function": {
-                "name": "check_availability",
+                "name": ChatFunctions.CHECK_AVAILABILITY.value,
                 "description": "Filters availability by a specific date and a time range defined by start and end hours",
                 "strict": True,
                 "parameters": {
@@ -71,7 +73,7 @@ def get_available_tools() -> list:
         {
             "type": "function",
             "function": {
-                "name": "make_reservation",
+                "name": ChatFunctions.MAKE_RESERVATION.value,
                 "description": "Makes a reservation for a specified area type, date and time range",
                 "strict": True,
                 "parameters": {
