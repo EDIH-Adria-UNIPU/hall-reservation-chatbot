@@ -28,15 +28,15 @@ if "messages" not in st.session_state:
     )
     st.session_state.messages.append({"role": "system", "content": system_message})
 
-    st.session_state.messages.append(
-        {
-            "role": "assistant",
-            "content": "Pozdrav! Ja sam asistent za rezervacije u Coworking Pula. Mogu vam pomoći rezervirati dvoranu, sobu za sastanke ili coworking prostor. Koji prostor vas zanima?",
-        }
-    )
+    initial_assistant_msg = {
+        "role": "assistant",
+        "content": "Pozdrav! Ja sam asistent za rezervacije u Coworking Pula. Mogu vam pomoći rezervirati dvoranu, sobu za sastanke ili coworking prostor. Koji prostor vas zanima?",
+    }
+
+    st.session_state.messages.append(initial_assistant_msg)
 
 for msg in st.session_state.messages:
-    if msg["role"] != "system":  # Only display non-system messages
+    if isinstance(msg, dict) and msg["role"] in ["user", "assistant"]:
         st.chat_message(msg["role"]).write(msg["content"])
 
 
@@ -57,20 +57,30 @@ if prompt := st.chat_input():
         st.session_state.messages.append({"role": "assistant", "content": msg})
         st.chat_message("assistant").write(msg)
     elif response.choices[0].message.tool_calls:
-        # TODO: another function for making reservations (the conversation should end after this function
-        # and the subsequent response from the assistant)
-
-        print("\nFunction call detected:", response.choices[0].message)
         tool_call = response.choices[0].message.tool_calls[0]
+
+        function_name = tool_call.function.name
         arguments = json.loads(tool_call.function.arguments)
-        print("\nFunction call with arguments:", arguments)
-        date = arguments.get("date")
-        start_hour = arguments.get("start_hour")
-        end_hour = arguments.get("end_hour")
 
-        result = manager.check_availability(date, start_hour, end_hour)
+        print(f"\nCall function {function_name} with arguments: {arguments}")
 
-        print("\nAvailable slots:", result)
+        if function_name == "check_availability":
+            result = manager.check_availability(
+                arguments.get("date"),
+                arguments.get("start_hour"),
+                arguments.get("end_hour"),
+            )
+            print("\nAvailable slots:", result)
+        elif function_name == "make_reservation":
+            result = manager.make_reservation(
+                arguments.get("area_type"),
+                arguments.get("date"),
+                arguments.get("start_hour"),
+                arguments.get("end_hour"),
+            )
+            print(result)
+        else:
+            raise ValueError(f"Function '{function_name}' not found.")
 
         # Add message with tool call
         st.session_state.messages.append(response.choices[0].message)

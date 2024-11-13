@@ -67,5 +67,37 @@ def get_available_tools() -> list:
                     "additionalProperties": False,
                 },
             },
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "make_reservation",
+                "description": "Makes a reservation for a specified area type, date and time range",
+                "strict": True,
+                "parameters": {
+                    "type": "object",
+                    "required": ["area_type", "date", "start_hour", "end_hour"],
+                    "properties": {
+                        "area_type": {
+                            "type": "string",
+                            "description": "Type of area to reserve (hall, room, or coworking)",
+                            "enum": ["hall", "room", "coworking"]
+                        },
+                        "date": {
+                            "type": "string",
+                            "description": "The date for the reservation, formatted as YYYY-MM-DD"
+                        },
+                        "start_hour": {
+                            "type": "number",
+                            "description": "The starting hour for the reservation (0-23)"
+                        },
+                        "end_hour": {
+                            "type": "number",
+                            "description": "The ending hour for the reservation (0-23)"
+                        }
+                    },
+                    "additionalProperties": False
+                }
+            }
         }
     ]
