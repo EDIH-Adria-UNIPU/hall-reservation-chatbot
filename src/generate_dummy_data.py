@@ -25,9 +25,9 @@ for date in dates:
                 "Date": date,
                 "Start Time": start_time,
                 "End Time": end_time,
-                "Conference Hall Available": hall_free,
-                "Meeting Room Available": room_free,
-                "Coworking Seats Available": seats_free,
+                "Dostupnih dvorana": hall_free,
+                "Dostupnih soba za sastanke": room_free,
+                "Dostupnih coworking mjesta": seats_free,
             }
         )
 

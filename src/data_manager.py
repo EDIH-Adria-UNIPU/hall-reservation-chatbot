@@ -4,7 +4,7 @@ from typing import Optional
 
 
 class DataManager:
-    def __init__(self, csv_path: str = "src/data/hall_reservation_schedule.csv"):
+    def __init__(self, csv_path: str = "src/hall_reservation_schedule.csv"):
         self.csv_path = Path(csv_path)
         self._df: Optional[pl.DataFrame] = None
 
