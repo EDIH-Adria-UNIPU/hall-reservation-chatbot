@@ -62,6 +62,13 @@ def handle_function_call(manager, function_name, arguments):
     return result
 
 
+def retrieve_function_details(response):
+    tool_call = response.choices[0].message.tool_calls[0]
+    function_name = tool_call.function.name
+    arguments = json.loads(tool_call.function.arguments)
+    return function_name, arguments
+
+
 if prompt := st.chat_input():
     if not st.secrets["OPENAI_API_KEY"]:
         st.info("Please add your OpenAI API key to continue.")
@@ -79,10 +86,7 @@ if prompt := st.chat_input():
         st.session_state.messages.append({"role": "assistant", "content": msg})
         st.chat_message("assistant").write(msg)
     elif response.choices[0].message.tool_calls:
-        tool_call = response.choices[0].message.tool_calls[0]
-
-        function_name = tool_call.function.name
-        arguments = json.loads(tool_call.function.arguments)
+        tool_call, function_name, arguments = retrieve_function_details(response)
 
         print(f"\nCall function {function_name} with arguments: {arguments}")
         result = handle_function_call(manager, function_name, arguments)
