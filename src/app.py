@@ -4,12 +4,13 @@ import os
 import json
 from datetime import datetime
 
-from utils import prepare_prompt
+from utils import prepare_prompt, get_available_tools
 from data_manager import DataManager
 
 st.title("IDA - chatbot za rezevaciju dvorana")
 
 manager = DataManager()
+tools = get_available_tools()
 
 # Add initial system and assistant messages
 if "messages" not in st.session_state:
@@ -34,37 +35,6 @@ if "messages" not in st.session_state:
         }
     )
 
-tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "check_availability",
-            "description": "Filters availability by a specific date and a time range defined by start and end hours",
-            "strict": True,
-            "parameters": {
-                "type": "object",
-                "required": ["date", "start_hour", "end_hour"],
-                "properties": {
-                    "date": {
-                        "type": "string",
-                        "description": "The date for which availability is being checked, formatted as YYYY-MM-DD",
-                    },
-                    "start_hour": {
-                        "type": "number",
-                        "description": "The starting hour for the time range (0-23)",
-                    },
-                    "end_hour": {
-                        "type": "number",
-                        "description": "The ending hour for the time range (0-23)",
-                    },
-                },
-                "required": ["date", "start_hour", "end_hour"],
-                "additionalProperties": False,
-            },
-        },
-    }
-]
-
 for msg in st.session_state.messages:
     if msg["role"] != "system":  # Only display non-system messages
         st.chat_message(msg["role"]).write(msg["content"])
@@ -87,6 +57,9 @@ if prompt := st.chat_input():
         st.session_state.messages.append({"role": "assistant", "content": msg})
         st.chat_message("assistant").write(msg)
     elif response.choices[0].message.tool_calls:
+        # TODO: another function for making reservations (the conversation should end after this function
+        # and the subsequent response from the assistant)
+
         print("\nFunction call detected:", response.choices[0].message)
         tool_call = response.choices[0].message.tool_calls[0]
         arguments = json.loads(tool_call.function.arguments)

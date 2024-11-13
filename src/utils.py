@@ -1,8 +1,8 @@
-def prepare_prompt(prompt_template_path, **kwargs):
+def prepare_prompt(prompt_template_path: str, **kwargs) -> str:
     """
     Replace the placeholders in the prompt template with the given values.
     Args:
-        prompt_template_path (str): The path to the prompt template file.
+        prompt_template_path: The path to the prompt template file.
         **kwargs: Keyword arguments where keys are variable names (without '::')
                   and values are the replacement strings.
     Returns:
@@ -36,3 +36,36 @@ def prepare_prompt(prompt_template_path, **kwargs):
         prompt = prompt.replace(placeholder, value)
 
     return prompt
+
+
+def get_available_tools() -> list:
+    return [
+        {
+            "type": "function",
+            "function": {
+                "name": "check_availability",
+                "description": "Filters availability by a specific date and a time range defined by start and end hours",
+                "strict": True,
+                "parameters": {
+                    "type": "object",
+                    "required": ["date", "start_hour", "end_hour"],
+                    "properties": {
+                        "date": {
+                            "type": "string",
+                            "description": "The date for which availability is being checked, formatted as YYYY-MM-DD",
+                        },
+                        "start_hour": {
+                            "type": "number",
+                            "description": "The starting hour for the time range (0-23)",
+                        },
+                        "end_hour": {
+                            "type": "number",
+                            "description": "The ending hour for the time range (0-23)",
+                        },
+                    },
+                    "required": ["date", "start_hour", "end_hour"],
+                    "additionalProperties": False,
+                },
+            },
+        }
+    ]
