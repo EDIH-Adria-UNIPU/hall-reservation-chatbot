@@ -66,7 +66,7 @@ def retrieve_function_details(response):
     tool_call = response.choices[0].message.tool_calls[0]
     function_name = tool_call.function.name
     arguments = json.loads(tool_call.function.arguments)
-    return function_name, arguments
+    return tool_call, function_name, arguments
 
 
 if prompt := st.chat_input():
