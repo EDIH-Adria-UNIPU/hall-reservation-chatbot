@@ -16,7 +16,7 @@ class DataManager:
         """Load data from CSV file."""
         if not self.csv_path.exists():
             raise FileNotFoundError(f"CSV file not found at {self.csv_path}")
-        self._df = pl.read_csv(self.csv_path)
+        self._df = pl.read_csv(str(self.csv_path))
 
     def check_availability(
         self, date: str, start_hour: int, end_hour: int

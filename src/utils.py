@@ -1,5 +1,6 @@
 from functions import ChatFunctions
 
+
 def prepare_prompt(prompt_template_path: str, **kwargs) -> str:
     """
     Replace the placeholders in the prompt template with the given values.
@@ -46,7 +47,7 @@ def get_available_tools() -> list:
             "type": "function",
             "function": {
                 "name": ChatFunctions.CHECK_AVAILABILITY.value,
-                "description": "Filters availability by a specific date and a time range defined by start and end hours",
+                "description": "Filters availability by a specific date and a time range defined by start and end hours. Call this function as soon as possible.",
                 "strict": True,
                 "parameters": {
                     "type": "object",
@@ -83,23 +84,23 @@ def get_available_tools() -> list:
                         "area_type": {
                             "type": "string",
                             "description": "Type of area to reserve (hall, room, or coworking)",
-                            "enum": ["hall", "room", "coworking"]
+                            "enum": ["hall", "room", "coworking"],
                         },
                         "date": {
                             "type": "string",
-                            "description": "The date for the reservation, formatted as YYYY-MM-DD"
+                            "description": "The date for the reservation, formatted as YYYY-MM-DD",
                         },
                         "start_hour": {
                             "type": "number",
-                            "description": "The starting hour for the reservation (0-23)"
+                            "description": "The starting hour for the reservation (0-23)",
                         },
                         "end_hour": {
                             "type": "number",
-                            "description": "The ending hour for the reservation (0-23)"
-                        }
+                            "description": "The ending hour for the reservation (0-23)",
+                        },
                     },
-                    "additionalProperties": False
-                }
-            }
-        }
+                    "additionalProperties": False,
+                },
+            },
+        },
     ]
