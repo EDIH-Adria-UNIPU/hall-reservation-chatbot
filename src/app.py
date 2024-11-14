@@ -8,7 +8,9 @@ from utils import prepare_prompt, get_available_tools
 from data_manager import DataManager
 from functions import ChatFunctions
 
-st.title("IDA - chatbot za rezevaciju dvorana")
+st.image("src/assets/ida_logo.jpg", width=200)
+
+st.title("Chatbot za rezevaciju dvorana")
 
 manager = DataManager()
 tools = get_available_tools()
