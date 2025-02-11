@@ -15,7 +15,7 @@ A Streamlit-based chatbot application developed for IDA (Istrian Development Age
 
 ## Prerequisites
 
-- Python 3.8+
+- Python 3.12 or higher
 - OpenAI API key
 - uv package manager (`pip install uv`)
 
