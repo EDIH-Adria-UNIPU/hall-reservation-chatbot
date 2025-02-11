@@ -1,6 +1,6 @@
 # Hall Reservation Chatbot
 
-A Streamlit-based chatbot application developed for IDA (Istrian Development Agency) to automate space reservations in Coworking Pula. The chatbot uses OpenAI's language models to handle natural language conversations in Croatian and helps users reserve different types of spaces including halls, meeting rooms, and coworking spaces.
+A Streamlit-based chatbot application developed for IDA (Istrian Development Agency) to automate space reservations in Coworking Pula. The chatbot uses OpenAI's language models to handle natural language conversations in Croatian and helps collect user requirements and contact information for different types of spaces including halls, meeting rooms, and coworking spaces.
 
 ## Features
 
@@ -41,19 +41,13 @@ OPENAI_API_KEY = "your-api-key-here"
 
 ## Usage
 
-1. Generate initial dummy data:
-
-```bash
-uv run src/generate_dummy_data.py
-```
-
-2. Run the Streamlit application:
+1. Run the Streamlit application:
 
 ```bash
 streamlit run src/app.py
 ```
 
-3. Access the application through your web browser at `http://localhost:8501`
+2. Access the application through your web browser at `http://localhost:8501`
 
 ## Project Structure
 
@@ -82,5 +76,4 @@ This project is part of a Test-before-invest (TBI) initiative for IDA, developed
 
 - Prototype version (TRL 3-4)
 - Standalone system without integration to existing IDA systems
-- Demo database with generated dummy data
 - Croatian language support only

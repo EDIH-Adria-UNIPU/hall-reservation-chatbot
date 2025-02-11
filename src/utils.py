@@ -46,61 +46,81 @@ def get_available_tools() -> list:
         {
             "type": "function",
             "function": {
-                "name": ChatFunctions.CHECK_AVAILABILITY.value,
-                "description": "Filters availability by a specific date and a time range defined by start and end hours. Call this function as soon as possible.",
+                "name": ChatFunctions.COLLECT_CONTACT.value,
+                "description": "Collects contact information from the user for sending an offer",
                 "strict": True,
                 "parameters": {
                     "type": "object",
-                    "required": ["date", "start_hour", "end_hour"],
+                    "required": ["name", "contact_type", "contact_value", "space_type", "requirements"],
                     "properties": {
-                        "date": {
+                        "name": {
                             "type": "string",
-                            "description": "The date for which availability is being checked, formatted as YYYY-MM-DD",
+                            "description": "The name of the person requesting the offer",
                         },
-                        "start_hour": {
-                            "type": "number",
-                            "description": "The starting hour for the time range (0-23)",
+                        "contact_type": {
+                            "type": "string",
+                            "description": "The preferred contact method (email or phone)",
+                            "enum": ["email", "phone"],
                         },
-                        "end_hour": {
-                            "type": "number",
-                            "description": "The ending hour for the time range (0-23)",
+                        "contact_value": {
+                            "type": "string",
+                            "description": "The email address or phone number",
                         },
+                        "space_type": {
+                            "type": "string",
+                            "description": "Type of space they're interested in",
+                            "enum": ["konferencijska_dvorana", "sala_za_sastanke", "ured", "flydesk"],
+                        },
+                        "requirements": {
+                            "type": "object",
+                            "description": "All the requirements collected during the conversation",
+                            "properties": {
+                                "participants": {
+                                    "type": "integer",
+                                    "description": "Number of participants/workspaces needed",
+                                },
+                                "date": {
+                                    "type": "string",
+                                    "description": "Desired date for the space",
+                                },
+                                "time": {
+                                    "type": "string",
+                                    "description": "Desired time for the space",
+                                },
+                                "additional_services": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "description": "List of additional services needed",
+                                },
+                                "duration": {
+                                    "type": "string",
+                                    "description": "Duration of stay (for flydesk)",
+                                },
+                                "tour_requested": {
+                                    "type": "boolean",
+                                    "description": "Whether they want to schedule a tour",
+                                },
+                                "how_found": {
+                                    "type": "string",
+                                    "description": "How they found out about the coworking space",
+                                }
+                            },
+                            "required": [
+                                "participants",
+                                "date",
+                                "time",
+                                "additional_services",
+                                "duration",
+                                "tour_requested",
+                                "how_found"
+                            ],
+                            "additionalProperties": False,
+                        }
                     },
-                    "required": ["date", "start_hour", "end_hour"],
                     "additionalProperties": False,
                 },
             },
-        },
-        {
-            "type": "function",
-            "function": {
-                "name": ChatFunctions.MAKE_RESERVATION.value,
-                "description": "Makes a reservation for a specified area type, date and time range",
-                "strict": True,
-                "parameters": {
-                    "type": "object",
-                    "required": ["area_type", "date", "start_hour", "end_hour"],
-                    "properties": {
-                        "area_type": {
-                            "type": "string",
-                            "description": "Type of area to reserve (hall, room, or coworking)",
-                            "enum": ["hall", "room", "coworking"],
-                        },
-                        "date": {
-                            "type": "string",
-                            "description": "The date for the reservation, formatted as YYYY-MM-DD",
-                        },
-                        "start_hour": {
-                            "type": "number",
-                            "description": "The starting hour for the reservation (0-23)",
-                        },
-                        "end_hour": {
-                            "type": "number",
-                            "description": "The ending hour for the reservation (0-23)",
-                        },
-                    },
-                    "additionalProperties": False,
-                },
-            },
-        },
+        }
     ]

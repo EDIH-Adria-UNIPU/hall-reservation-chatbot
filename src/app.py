@@ -33,7 +33,7 @@ if "messages" not in st.session_state:
 
     initial_assistant_msg = {
         "role": "assistant",
-        "content": "Pozdrav! Ja sam asistent za rezervacije u Coworking Pula. Mogu vam pomoći rezervirati dvoranu, sobu za sastanke ili coworking prostor. Koji prostor vas zanima?",
+        "content": "Pozdrav! Ja sam asistent za rezervacije u Coworking Pula. Mogu vam pomoći s informacijama o najmu konferencijske dvorane, sale za sastanke, ureda ili radnih jedinica (flydesk). Koji prostor vas zanima?",
     }
 
     st.session_state.messages.append(initial_assistant_msg)
@@ -44,21 +44,15 @@ for msg in st.session_state.messages:
 
 
 def handle_function_call(manager, function_name, arguments):
-    if function_name == ChatFunctions.CHECK_AVAILABILITY.value:
-        result = manager.check_availability(
-            arguments.get("date"),
-            arguments.get("start_hour"),
-            arguments.get("end_hour"),
+    if function_name == ChatFunctions.COLLECT_CONTACT.value:
+        result = manager.collect_contact(
+            arguments.get("name"),
+            arguments.get("contact_type"),
+            arguments.get("contact_value"),
+            arguments.get("space_type"),
+            arguments.get("requirements"),
         )
-        print("\nAvailable slots:", result)
-    elif function_name == ChatFunctions.MAKE_RESERVATION.value:
-        result = manager.make_reservation(
-            arguments.get("area_type"),
-            arguments.get("date"),
-            arguments.get("start_hour"),
-            arguments.get("end_hour"),
-        )
-        print(result)
+        print("\nContact information collected:", result)
     else:
         raise ValueError(f"Function '{function_name}' not found.")
     return result
