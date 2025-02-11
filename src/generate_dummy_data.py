@@ -1,5 +1,5 @@
 import polars as pl
-from datetime import date, timedelta, time
+from datetime import date, timedelta
 import random
 
 random.seed(42)
@@ -10,7 +10,7 @@ DAYS = 10
 
 dates = [(start_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(DAYS)]
 
-time_slots = [(time(hour, 0), time(hour + 1, 0)) for hour in range(8, 20)]  # 8 to 19
+time_slots = [(hour, hour + 1) for hour in range(8, 20)]  # 8 to 19
 
 schedule = []
 for date in dates:

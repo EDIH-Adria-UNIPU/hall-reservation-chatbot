@@ -25,13 +25,10 @@ class DataManager:
         if self._df is None:
             self.load_data()
 
-        start_time = f"{start_hour:02d}:00:00.000000000"
-        end_time = f"{end_hour:02d}:00:00.000000000"
-
         return self._df.filter(
             (pl.col("Date") == date)
-            & (pl.col("Start Time") >= start_time)
-            & (pl.col("End Time") <= end_time)
+            & (pl.col("Start Time") >= start_hour)
+            & (pl.col("End Time") <= end_hour)
         )
 
     def make_reservation(
