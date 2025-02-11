@@ -1,6 +1,7 @@
 import polars as pl
 from pathlib import Path
 from typing import Optional
+import warnings
 
 
 class DataManager:
@@ -8,9 +9,12 @@ class DataManager:
     Class for reading and filtering hall reservation schedule data.
     """
 
-    def __init__(self, csv_path: str = "src/hall_reservation_schedule.csv"):
+    def __init__(self, csv_path: str = "hall_reservation_schedule.csv"):
         self.csv_path = Path(csv_path)
         self._df: Optional[pl.DataFrame] = None
+        
+        if not self.csv_path.exists():
+            warnings.warn(f"CSV file not found at {self.csv_path}. Please ensure the file exists before loading data.")
 
     def load_data(self) -> None:
         """Load data from CSV file."""
