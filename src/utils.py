@@ -122,5 +122,37 @@ def get_available_tools() -> list:
                     "additionalProperties": False,
                 },
             },
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": ChatFunctions.CHECK_AVAILABILITY.value,
+                "description": "Checks if a space is available for the specified date and time",
+                "strict": True,
+                "parameters": {
+                    "type": "object",
+                    "required": ["space_type", "date", "start_time", "end_time"],
+                    "properties": {
+                        "space_type": {
+                            "type": "string",
+                            "description": "Type of space to check",
+                            "enum": ["dvorana", "sala_za_sastanke", "ured"],
+                        },
+                        "date": {
+                            "type": "string",
+                            "description": "Date in YYYY-MM-DD format",
+                        },
+                        "start_time": {
+                            "type": "string",
+                            "description": "Start time in HH:MM format",
+                        },
+                        "end_time": {
+                            "type": "string",
+                            "description": "End time in HH:MM format",
+                        }
+                    },
+                    "additionalProperties": False,
+                }
+            }
         }
     ]

@@ -8,11 +8,23 @@ from utils import prepare_prompt, get_available_tools
 from data_manager import DataManager
 from functions import ChatFunctions
 
+# Create calendar.json if it doesn't exist
+calendar_path = "calendar.json"
+if not os.path.exists(calendar_path):
+    initial_calendar = {
+        "dvorana": {},
+        "sala_za_sastanke": {},
+        "ured": {}
+    }
+    with open(calendar_path, "w") as f:
+        json.dump(initial_calendar, f)
+
 st.image("src/assets/ida_logo.jpg", width=200)
 
 st.title("Chatbot za rezevaciju dvorana")
 
 manager = DataManager()
+manager.add_dummy_bookings()  # Initialize some dummy bookings for testing
 tools = get_available_tools()
 
 # Add initial system and assistant messages
@@ -53,6 +65,15 @@ def handle_function_call(manager, function_name, arguments):
             arguments.get("requirements"),
         )
         print("\nContact information collected:", result)
+    elif function_name == ChatFunctions.CHECK_AVAILABILITY.value:
+        result = manager.check_availability(
+            arguments.get("space_type"),
+            arguments.get("date"),
+            arguments.get("start_time"),
+            arguments.get("end_time")
+        )
+        print("\nAvailability check result:", result)
+        return "Prostor je dostupan u traženom terminu." if result else "Nažalost, prostor nije dostupan u traženom terminu."
     else:
         raise ValueError(f"Function '{function_name}' not found.")
     return result
