@@ -21,7 +21,7 @@ if not os.path.exists(calendar_path):
 
 st.image("src/assets/ida_logo.jpg", width=200)
 
-st.title("Chatbot za rezevaciju dvorana")
+st.title("Chatbot za rezevaciju prostora")
 
 manager = DataManager()
 manager.add_dummy_bookings()  # Initialize some dummy bookings for testing
