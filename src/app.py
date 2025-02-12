@@ -33,7 +33,7 @@ if "messages" not in st.session_state:
 
     initial_assistant_msg = {
         "role": "assistant",
-        "content": "Pozdrav! Ja sam asistent za rezervacije u Coworking Pula. Mogu vam pomoći s informacijama o najmu konferencijske dvorane, sale za sastanke, ureda ili radnih jedinica (flydesk). Koji prostor vas zanima?",
+        "content": "Pozdrav! Ja sam asistent za rezervaciju prostora u Coworking Pula. Mogu vam pomoći s informacijama o najmu konferencijske dvorane, sale za sastanke, ureda ili radnih jedinica (flydesk). Koji prostor vas zanima?",
     }
 
     st.session_state.messages.append(initial_assistant_msg)
