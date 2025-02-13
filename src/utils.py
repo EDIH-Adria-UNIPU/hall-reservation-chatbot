@@ -102,10 +102,6 @@ def get_available_tools() -> list:
                                     "type": "boolean",
                                     "description": "Whether they want to schedule a tour",
                                 },
-                                "how_found": {
-                                    "type": "string",
-                                    "description": "How they found out about the coworking space",
-                                }
                             },
                             "required": [
                                 "participants",
@@ -114,7 +110,6 @@ def get_available_tools() -> list:
                                 "additional_services",
                                 "duration",
                                 "tour_requested",
-                                "how_found"
                             ],
                             "additionalProperties": False,
                         }

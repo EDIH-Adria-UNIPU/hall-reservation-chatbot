@@ -39,7 +39,6 @@ if "messages" not in st.session_state:
     system_message = prepare_prompt(
         os.path.join("src", "prompts", "system_message.txt"),
         date=current_date,
-        time=current_time,
     )
     st.session_state.messages.append({"role": "system", "content": system_message})
 
