@@ -78,6 +78,14 @@ def handle_function_call(manager, function_name, arguments):
         )
         print("\nAvailability check result:", result)
         return "Prostor je dostupan u traženom terminu." if result else "Nažalost, prostor nije dostupan u traženom terminu."
+    elif function_name == ChatFunctions.GET_AVAILABLE_SLOTS.value:
+        available_slots = manager.get_available_slots(
+            arguments.get("space_type"),
+            arguments.get("date")
+        )
+        slots_text = ", ".join([f"{start}-{end}" for start, end in available_slots])
+        print("\nAvailable slots:", available_slots)
+        return f"Za taj dan, slobodni termini su: {slots_text}"
     else:
         raise ValueError(f"Function '{function_name}' not found.")
     return result

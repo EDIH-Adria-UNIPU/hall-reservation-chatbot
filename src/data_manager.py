@@ -83,6 +83,46 @@ class DataManager:
         
         self._save_calendar()
 
+    def get_available_slots(self, space_type: str, date: str) -> list:
+        """
+        Get all available time slots for a specific space on a given date.
+        
+        Args:
+            space_type: 'dvorana', 'sala_za_sastanke', or 'ured'
+            date: Date in YYYY-MM-DD format
+            
+        Returns:
+            list: List of tuples containing available time slots [(start_time, end_time)]
+        """
+        if space_type not in self._calendar:
+            return [("08:00", "22:00")]  # If space type doesn't exist, assume fully available
+            
+        # Get occupied slots for the date
+        occupied_slots = self._calendar[space_type].get(date, [])
+        if not occupied_slots:
+            return [("08:00", "22:00")]  # If no bookings, fully available
+            
+        # Sort occupied slots by start time
+        occupied_slots.sort(key=lambda x: x[0])
+        
+        available_slots = []
+        current_time = "08:00"  # Start of business day
+        
+        # Check for available slot before first booking
+        if occupied_slots[0][0] > current_time:
+            available_slots.append((current_time, occupied_slots[0][0]))
+            
+        # Check for slots between bookings
+        for i in range(len(occupied_slots)-1):
+            if occupied_slots[i][1] < occupied_slots[i+1][0]:
+                available_slots.append((occupied_slots[i][1], occupied_slots[i+1][0]))
+                
+        # Check for available slot after last booking
+        if occupied_slots[-1][1] < "22:00":  # End of business day
+            available_slots.append((occupied_slots[-1][1], "22:00"))
+            
+        return available_slots
+
     def collect_contact(
         self,
         name: str,

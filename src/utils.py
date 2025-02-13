@@ -154,5 +154,29 @@ def get_available_tools() -> list:
                     "additionalProperties": False,
                 }
             }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": ChatFunctions.GET_AVAILABLE_SLOTS.value,
+                "description": "Gets all available time slots for a specific space on a given date",
+                "strict": True,
+                "parameters": {
+                    "type": "object",
+                    "required": ["space_type", "date"],
+                    "properties": {
+                        "space_type": {
+                            "type": "string",
+                            "description": "Type of space to check",
+                            "enum": ["dvorana", "sala_za_sastanke", "ured"],
+                        },
+                        "date": {
+                            "type": "string",
+                            "description": "Date in YYYY-MM-DD format",
+                        }
+                    },
+                    "additionalProperties": False,
+                }
+            }
         }
     ]
