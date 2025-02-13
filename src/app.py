@@ -21,7 +21,7 @@ if not os.path.exists(calendar_path):
 
 st.image("src/assets/ida_logo.jpg", width=200)
 
-st.title("Chatbot za rezevaciju prostora")
+st.title("Chatbot za rezevaciju prostora u Coworking Pula")
 
 manager = DataManager()
 manager.add_dummy_bookings()  # Initialize some dummy bookings for testing
@@ -91,13 +91,6 @@ def handle_function_call(manager, function_name, arguments):
     return result
 
 
-def retrieve_function_details(response):
-    tool_call = response.choices[0].message.tool_calls[0]
-    function_name = tool_call.function.name
-    arguments = json.loads(tool_call.function.arguments)
-    return tool_call, function_name, arguments
-
-
 if prompt := st.chat_input():
     if not st.secrets["OPENAI_API_KEY"]:
         st.info("Please add your OpenAI API key to continue.")
@@ -106,47 +99,53 @@ if prompt := st.chat_input():
     client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
-    response = client.chat.completions.create(
-        model="gpt-4o-mini", messages=st.session_state.messages, tools=tools
-    )
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini", messages=st.session_state.messages, tools=tools
+        )
+    except Exception as e:
+        st.error("Oprostite, došlo je do tehničke poteškoće. Molim vas osvježite stranicu i pokušajte ponovno.")
+        st.stop()
 
     if response.choices[0].message.content is not None:
         msg = response.choices[0].message.content
         st.session_state.messages.append({"role": "assistant", "content": msg})
         with st.chat_message("assistant"):
             st.write(msg)
-            # Show parking image immediately if mentioned
             if "parking" in msg.lower():
                 st.image("src/assets/parking.png", caption="Parking lokacija")
     elif response.choices[0].message.tool_calls:
-        tool_call, function_name, arguments = retrieve_function_details(response)
+        # Handle all tool calls in the response
+        for tool_call in response.choices[0].message.tool_calls:
+            # function_name = tool_call.function.name
+            # arguments = json.loads(tool_call.function.arguments)
+            print(f"\nCall function {function_name} with arguments: {arguments}")
+            
+            result = handle_function_call(manager, function_name, arguments)
+            
+            # Add both the tool call and its response
+            if not any(msg.get("tool_call_id") == tool_call.id for msg in st.session_state.messages if isinstance(msg, dict) and msg.get("role") == "tool"):
+                st.session_state.messages.append(response.choices[0].message)
+                st.session_state.messages.append({
+                    "role": "tool",
+                    "content": str(result),
+                    "tool_call_id": tool_call.id,
+                })
 
-        print(f"\nCall function {function_name} with arguments: {arguments}")
-        result = handle_function_call(manager, function_name, arguments)
-
-        # Add message with tool call
-        st.session_state.messages.append(response.choices[0].message)
-
-        # Add message with tool output
-        st.session_state.messages.append(
-            {
-                "role": "tool",
-                "content": str(result),
-                "tool_call_id": tool_call.id,
-            }
-        )
-
-        # Make another call to OpenAI API to continue the conversation
-        response = client.chat.completions.create(
-            model="gpt-4o-mini", messages=st.session_state.messages, tools=tools
-        )
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini", messages=st.session_state.messages, tools=tools
+            )
+        except Exception as e:
+            st.error("Oprostite, došlo je do tehničke poteškoće. Molim vas osvježite stranicu i pokušajte ponovno.")
+            st.stop()
 
         if response.choices[0].message.content is not None:
             msg = response.choices[0].message.content
             st.session_state.messages.append({"role": "assistant", "content": msg})
             with st.chat_message("assistant"):
                 st.write(msg)
-                # Show parking image immediately if mentioned
                 if "parking" in msg.lower():
                     st.image("src/assets/parking.png", caption="Parking lokacija")
     else:
