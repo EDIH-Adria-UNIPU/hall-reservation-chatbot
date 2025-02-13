@@ -68,6 +68,7 @@ Za urede:
 Za radne jedinice (flydesk):
 1. Pitajte planiraju li raditi povremeno (najam jedan dan) ili svakodnevno (tjedan dana, mjesec dana)
 2. Pitajte treba li im dodatna oprema, poput ekrana
+3. Ne trebaš provjeravati dostupnost
 
 Nakon što prikupite sve informacije specifične za prostor i POTVRDITE DOSTUPNOST, nastavite s dodatnim pitanjima:
 1. Pitajte žele li saznati više o pogodnostima Coworking centra
