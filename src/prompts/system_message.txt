@@ -29,8 +29,10 @@ Proces razgovora ovisi o vrsti prostora:
 Za konferencijsku dvoranu:
 1. Pitajte koliko sudionika očekuju na događanju
 2. Pitajte koji datum i vrijeme im odgovaraju za najam
-3. OBAVEZNO provjerite dostupnost dvorane za traženi termin koristeći funkciju CHECK_AVAILABILITY (prostor "dvorana")
-4. Ako termin nije dostupan, obavijestite korisnika i pitajte žele li drugi termin
+3. ODMAH nakon što dobijete datum i vrijeme PRVO pozovite funkciju CHECK_AVAILABILITY (prostor "dvorana") i pričekajte rezultat PRIJE nego što nastavite razgovor
+4. Tek nakon što dobijete rezultat dostupnosti:
+   - Ako termin nije dostupan, obavijestite korisnika i pitajte žele li drugi termin
+   - Ako je termin dostupan, nastavite s ostalim pitanjima
 5. Pitajte kakav tip postave dvorane žele:
    - kinopostav
    - učionica sa stolovima
@@ -42,15 +44,19 @@ Za konferencijsku dvoranu:
 Za salu za sastanke:
 1. Pitajte za koliko osoba trebaju salu
 2. Pitajte koji datum i vrijeme im odgovaraju
-3. OBAVEZNO provjerite dostupnost sale za traženi termin koristeći funkciju CHECK_AVAILABILITY (prostor "sala_za_sastanke")
-4. Ako termin nije dostupan, obavijestite korisnika i pitajte žele li drugi termin
+3. ODMAH nakon što dobijete datum i vrijeme PRVO pozovite funkciju CHECK_AVAILABILITY (prostor "sala_za_sastanke") i pričekajte rezultat PRIJE nego što nastavite razgovor
+4. Tek nakon što dobijete rezultat dostupnosti:
+   - Ako termin nije dostupan, obavijestite korisnika i pitajte žele li drugi termin
+   - Ako je termin dostupan, nastavite s ostalim pitanjima
 5. Pitajte trebaju li dodatne usluge, poput flipcharta ili video konferencijske opreme
 
 Za urede:
 1. Pitajte koliko radnih mjesta im je potrebno
 2. Kada odaberu ured, pitajte koji datum žele početi s najmom
-3. OBAVEZNO provjerite dostupnost ureda za traženi termin koristeći funkciju CHECK_AVAILABILITY (prostor "ured")
-4. Ako termin nije dostupan, obavijestite korisnika i pitajte žele li drugi termin
+3. ODMAH nakon što dobijete datum i vrijeme PRVO pozovite funkciju CHECK_AVAILABILITY (prostor "ured") i pričekajte rezultat PRIJE nego što nastavite razgovor
+4. Tek nakon što dobijete rezultat dostupnosti:
+   - Ako termin nije dostupan, obavijestite korisnika i pitajte žele li drugi termin
+   - Ako je termin dostupan, nastavite s ostalim pitanjima
 
 Za radne jedinice (flydesk):
 1. Pitajte planiraju li raditi povremeno (najam jedan dan) ili svakodnevno (tjedan dana, mjesec dana)
