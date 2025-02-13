@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Dict
 import json
 from datetime import datetime, timedelta
+import logging
 
 
 class DataManager:
@@ -143,7 +144,16 @@ class DataManager:
         
         self._inquiries.append(inquiry)
         
-        with open(self.json_path, 'w', encoding='utf-8') as f:
-            json.dump(self._inquiries, f, indent=2, ensure_ascii=False)
+        # Log the inquiry details
+        logging.info("=== New Inquiry Received ===")
+        logging.info(json.dumps(inquiry, indent=2, ensure_ascii=False))
+        logging.info("===========================")
+        
+        try:
+            with open(self.json_path, 'w', encoding='utf-8') as f:
+                json.dump(self._inquiries, f, indent=2, ensure_ascii=False)
+            logging.info(f"Inquiry saved to {self.json_path}")
+        except Exception as e:
+            logging.warning(f"Could not save inquiry to file: {str(e)}")
         
         return "Hvala na upitu! Kontaktirat ćemo Vas uskoro s ponudom."
