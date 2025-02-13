@@ -105,6 +105,7 @@ if prompt := st.chat_input():
             model="gpt-4o-mini", messages=st.session_state.messages, tools=tools
         )
     except Exception as e:
+        print(f"OpenAI API Error: {str(e)}")
         st.error("Oprostite, došlo je do tehničke poteškoće. Molim vas osvježite stranicu i pokušajte ponovno.")
         st.stop()
 
@@ -116,6 +117,9 @@ if prompt := st.chat_input():
             if "parking" in msg.lower():
                 st.image("src/assets/parking.png", caption="Parking lokacija")
     elif response.choices[0].message.tool_calls:
+        # Store the assistant's message with tool calls
+        st.session_state.messages.append(response.choices[0].message)
+        
         # Handle all tool calls in the response
         for tool_call in response.choices[0].message.tool_calls:
             function_name = tool_call.function.name
@@ -124,20 +128,19 @@ if prompt := st.chat_input():
             
             result = handle_function_call(manager, function_name, arguments)
             
-            # Add both the tool call and its response
-            if not any(msg.get("tool_call_id") == tool_call.id for msg in st.session_state.messages if isinstance(msg, dict) and msg.get("role") == "tool"):
-                st.session_state.messages.append(response.choices[0].message)
-                st.session_state.messages.append({
-                    "role": "tool",
-                    "content": str(result),
-                    "tool_call_id": tool_call.id,
-                })
+            # Add the tool response message
+            st.session_state.messages.append({
+                "role": "tool",
+                "content": str(result),
+                "tool_call_id": tool_call.id,
+            })
 
         try:
             response = client.chat.completions.create(
                 model="gpt-4o-mini", messages=st.session_state.messages, tools=tools
             )
         except Exception as e:
+            print(f"OpenAI API Error: {str(e)}")
             st.error("Oprostite, došlo je do tehničke poteškoće. Molim vas osvježite stranicu i pokušajte ponovno.")
             st.stop()
 
