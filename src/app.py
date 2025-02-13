@@ -21,7 +21,7 @@ if not os.path.exists(calendar_path):
 
 st.image("src/assets/ida_logo.jpg", width=200)
 
-st.title("Chatbot za rezevaciju prostora u Coworking Pula")
+st.title("Chatbot za rezevaciju prostora")
 
 manager = DataManager()
 manager.add_dummy_bookings()  # Initialize some dummy bookings for testing
@@ -118,8 +118,8 @@ if prompt := st.chat_input():
     elif response.choices[0].message.tool_calls:
         # Handle all tool calls in the response
         for tool_call in response.choices[0].message.tool_calls:
-            # function_name = tool_call.function.name
-            # arguments = json.loads(tool_call.function.arguments)
+            function_name = tool_call.function.name
+            arguments = json.loads(tool_call.function.arguments)
             print(f"\nCall function {function_name} with arguments: {arguments}")
             
             result = handle_function_call(manager, function_name, arguments)
