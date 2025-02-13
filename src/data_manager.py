@@ -53,6 +53,10 @@ class DataManager:
         start_dt = datetime.strptime(f"{date} {start_time}", "%Y-%m-%d %H:%M")
         end_dt = datetime.strptime(f"{date} {end_time}", "%Y-%m-%d %H:%M")
         
+        # Check if date is in the past
+        if start_dt < datetime.now():
+            return "Nije moguće rezervirati termin u prošlosti."
+        
         # Check if time is within working hours (8:00-22:00)
         working_start = datetime.strptime(f"{date} 08:00", "%Y-%m-%d %H:%M")
         working_end = datetime.strptime(f"{date} 22:00", "%Y-%m-%d %H:%M")
