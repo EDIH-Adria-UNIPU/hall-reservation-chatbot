@@ -52,7 +52,11 @@ if "messages" not in st.session_state:
 
 for msg in st.session_state.messages:
     if isinstance(msg, dict) and msg["role"] in ["user", "assistant"]:
-        st.chat_message(msg["role"]).write(msg["content"])
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
+            # Show parking image if assistant mentions parking
+            if msg["role"] == "assistant" and "parking" in msg["content"].lower():
+                st.image("src/assets/parking.png", caption="Parking lokacija")
 
 
 def handle_function_call(manager, function_name, arguments):
@@ -101,7 +105,11 @@ if prompt := st.chat_input():
     if response.choices[0].message.content is not None:
         msg = response.choices[0].message.content
         st.session_state.messages.append({"role": "assistant", "content": msg})
-        st.chat_message("assistant").write(msg)
+        with st.chat_message("assistant"):
+            st.write(msg)
+            # Show parking image immediately if mentioned
+            if "parking" in msg.lower():
+                st.image("src/assets/parking.png", caption="Parking lokacija")
     elif response.choices[0].message.tool_calls:
         tool_call, function_name, arguments = retrieve_function_details(response)
 
@@ -128,6 +136,10 @@ if prompt := st.chat_input():
         if response.choices[0].message.content is not None:
             msg = response.choices[0].message.content
             st.session_state.messages.append({"role": "assistant", "content": msg})
-            st.chat_message("assistant").write(msg)
+            with st.chat_message("assistant"):
+                st.write(msg)
+                # Show parking image immediately if mentioned
+                if "parking" in msg.lower():
+                    st.image("src/assets/parking.png", caption="Parking lokacija")
     else:
         raise ValueError("No response from OpenAI API")

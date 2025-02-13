@@ -67,17 +67,19 @@ class DataManager:
         return True
 
     def add_dummy_bookings(self):
-        """Add some dummy bookings for testing purposes."""
-        today = datetime.now().strftime("%Y-%m-%d")
-        tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+        """Add dummy bookings for the next 30 days for testing purposes."""
+        # Generate dates for the next 30 days
+        dates = [(datetime.now() + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(30)]
         
-        # Add some dummy bookings
-        self._calendar["dvorana"][today] = [("09:00", "12:00"), ("14:00", "17:00")]
-        self._calendar["sala_za_sastanke"][today] = [("10:00", "11:00"), ("15:00", "16:30")]
-        self._calendar["ured"][today] = [("09:00", "17:00")]
-        
-        self._calendar["dvorana"][tomorrow] = [("13:00", "18:00")]
-        self._calendar["sala_za_sastanke"][tomorrow] = [("09:00", "10:30"), ("14:00", "15:00")]
+        for date in dates:
+            # Add random bookings with different patterns for each day
+            if int(date[-2:]) % 2 == 0:  # Even days
+                self._calendar["dvorana"][date] = [("09:00", "12:00"), ("14:00", "17:00")]
+                self._calendar["sala_za_sastanke"][date] = [("10:00", "11:00"), ("15:00", "16:30")]
+                self._calendar["ured"][date] = [("09:00", "17:00")]
+            else:  # Odd days
+                self._calendar["dvorana"][date] = [("13:00", "18:00")]
+                self._calendar["sala_za_sastanke"][date] = [("09:00", "10:30"), ("14:00", "15:00")]
         
         self._save_calendar()
 
