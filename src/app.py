@@ -106,7 +106,7 @@ DODATNI ZAHTJEVI
             arguments.get("end_time")
         )
         print("\nAvailability check result:", result)
-        return "Prostor je dostupan u traženom terminu." if result else "Nažalost, prostor nije dostupan u traženom terminu."
+        return result
     elif function_name == ChatFunctions.GET_AVAILABLE_SLOTS.value:
         available_slots = manager.get_available_slots(
             arguments.get("space_type"),

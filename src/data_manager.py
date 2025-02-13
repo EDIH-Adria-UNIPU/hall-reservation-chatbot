@@ -33,7 +33,7 @@ class DataManager:
         with open(self.calendar_path, 'w', encoding='utf-8') as f:
             json.dump(self._calendar, f, indent=2, ensure_ascii=False)
 
-    def check_availability(self, space_type: str, date: str, start_time: str, end_time: str) -> bool:
+    def check_availability(self, space_type: str, date: str, start_time: str, end_time: str) -> str:
         """
         Check if a space is available for the given time slot.
         
@@ -44,14 +44,21 @@ class DataManager:
             end_time: End time in HH:MM format
             
         Returns:
-            bool: True if space is available, False otherwise
+            str: Success or error message
         """
         if space_type not in self._calendar:
-            return False
+            return "Nepostojeći tip prostora."
             
         # Convert times to datetime objects for comparison
         start_dt = datetime.strptime(f"{date} {start_time}", "%Y-%m-%d %H:%M")
         end_dt = datetime.strptime(f"{date} {end_time}", "%Y-%m-%d %H:%M")
+        
+        # Check if time is within working hours (8:00-22:00)
+        working_start = datetime.strptime(f"{date} 08:00", "%Y-%m-%d %H:%M")
+        working_end = datetime.strptime(f"{date} 22:00", "%Y-%m-%d %H:%M")
+        
+        if start_dt < working_start or end_dt > working_end:
+            return "Termin je izvan radnog vremena (8-22h)."
         
         # Get existing bookings for the date
         date_bookings = self._calendar[space_type].get(date, [])
@@ -63,9 +70,9 @@ class DataManager:
             
             # Check if there's an overlap
             if not (end_dt <= booking_start_dt or start_dt >= booking_end_dt):
-                return False
+                return "Termin je već rezerviran."
                 
-        return True
+        return "Prostor je dostupan u traženom terminu."
 
     def add_dummy_bookings(self):
         """Add dummy bookings for the next 30 days for testing purposes."""
