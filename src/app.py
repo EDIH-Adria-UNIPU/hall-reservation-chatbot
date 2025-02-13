@@ -69,6 +69,36 @@ def handle_function_call(manager, function_name, arguments):
             arguments.get("requirements"),
         )
         print("\nContact information collected:", result)
+        
+        # Create formatted text content for the current reservation
+        reservation_text = f"""DETALJI REZERVACIJE
+========================
+Datum izdavanja: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+
+OSNOVNE INFORMACIJE
+------------------------
+Ime: {arguments.get("name")}
+Kontakt ({arguments.get("contact_type")}): {arguments.get("contact_value")}
+Tip prostora: {arguments.get("space_type")}
+
+DODATNI ZAHTJEVI
+------------------------"""
+
+        if arguments.get("requirements"):
+            for key, value in arguments.get("requirements").items():
+                reservation_text += f"\n{key}: {value}"
+        else:
+            reservation_text += "\nNema dodatnih zahtjeva"
+        
+        # Create download button
+        st.download_button(
+            label="Preuzmi detalje rezervacije",
+            data=reservation_text,
+            file_name=f"rezervacija_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+            mime='text/plain'
+        )
+        
+        return result
     elif function_name == ChatFunctions.CHECK_AVAILABILITY.value:
         result = manager.check_availability(
             arguments.get("space_type"),
