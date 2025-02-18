@@ -16,8 +16,7 @@ class DataManager:
         self._inquiries = []
         self._calendar = {
             "dvorana": {},  # {date_str: [(start_time, end_time)]}
-            "sala_za_sastanke": {},
-            "ured": {}
+            "sala_za_sastanke": {}
         }
         
         if self.json_path.exists():
@@ -91,7 +90,6 @@ class DataManager:
             if int(date[-2:]) % 2 == 0:  # Even days
                 self._calendar["dvorana"][date] = [("09:00", "12:00"), ("14:00", "17:00")]
                 self._calendar["sala_za_sastanke"][date] = [("10:00", "11:00"), ("15:00", "16:30")]
-                self._calendar["ured"][date] = [("09:00", "17:00")]
             else:  # Odd days
                 self._calendar["dvorana"][date] = [("13:00", "18:00")]
                 self._calendar["sala_za_sastanke"][date] = [("09:00", "10:30"), ("14:00", "15:00")]
@@ -103,12 +101,15 @@ class DataManager:
         Get all available time slots for a specific space on a given date.
         
         Args:
-            space_type: 'dvorana', 'sala_za_sastanke', or 'ured'
+            space_type: 'dvorana' or 'sala_za_sastanke'
             date: Date in YYYY-MM-DD format
             
         Returns:
             list: List of tuples containing available time slots [(start_time, end_time)]
         """
+        if space_type == "ured":
+            return []  # Offices are only available for monthly rent
+            
         if space_type not in self._calendar:
             return [("08:00", "22:00")]  # If space type doesn't exist, assume fully available
             

@@ -163,7 +163,7 @@ def get_available_tools() -> list:
                         "space_type": {
                             "type": "string",
                             "description": "Type of space to check",
-                            "enum": ["dvorana", "sala_za_sastanke", "ured"],
+                            "enum": ["dvorana", "sala_za_sastanke"],
                         },
                         "date": {
                             "type": "string",
