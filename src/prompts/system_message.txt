@@ -82,7 +82,7 @@ GET_AVAILABLE_SLOTS:
 - VAŽNO: Ne provjeravaj dostupnost za flydesk! Flydesk je uvijek dostupan.
 
 3. Nakon prikupljanja osnovnih informacija:
-- Pitajte žele li zakazati obilazak prostora (ponudite i odgovarajući link za virtualnu šetnju ovisno o prostoru koji ih zanima)
+- Pitajte žele li zakazati obilazak prostora
 - Prikupite kontakt podatke (ime i prezime, te email ili broj telefona)
 
 4. Na kraju OBAVEZNO:

@@ -57,6 +57,9 @@ for msg in st.session_state.messages:
             if msg["role"] == "assistant" and "parking" in msg["content"].lower():
                 st.image("src/assets/parking.png", caption="Parking lokacija")
 
+# Add reservation_completed flag to session state if not present
+if "reservation_completed" not in st.session_state:
+    st.session_state.reservation_completed = False
 
 def handle_function_call(manager, function_name, arguments):
     if function_name == ChatFunctions.COLLECT_CONTACT.value:
@@ -68,6 +71,9 @@ def handle_function_call(manager, function_name, arguments):
             arguments.get("requirements"),
         )
         print("\nContact information collected:", result)
+        
+        # Set reservation completed flag
+        st.session_state.reservation_completed = True
         
         # Create formatted text content for the current reservation
         reservation_text = f"""DETALJI REZERVACIJE
@@ -117,10 +123,10 @@ DODATNI ZAHTJEVI
         return f"Za taj dan, slobodni termini su: {slots_text}"
     else:
         raise ValueError(f"Function '{function_name}' not found.")
-    return result
 
-
-if prompt := st.chat_input():
+if st.session_state.reservation_completed:
+    st.info("Rezervacija je završena.")
+elif prompt := st.chat_input():
     if not st.secrets["OPENAI_API_KEY"]:
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
