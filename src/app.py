@@ -3,6 +3,7 @@ from openai import OpenAI
 import os
 import json
 from datetime import datetime
+import pytz
 
 from utils import prepare_prompt, get_available_tools
 from data_manager import DataManager
@@ -75,10 +76,14 @@ def handle_function_call(manager, function_name, arguments):
         # Set reservation completed flag
         st.session_state.reservation_completed = True
         
+        # Get current time in CET
+        cet = pytz.timezone('CET')
+        current_time_cet = datetime.now(cet)
+        
         # Create formatted text content for the current reservation
         reservation_text = f"""DETALJI REZERVACIJE
 ========================
-Datum izdavanja: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+Datum izdavanja: {current_time_cet.strftime("%Y-%m-%d %H:%M:%S")} CET
 
 OSNOVNE INFORMACIJE
 ------------------------
@@ -137,7 +142,7 @@ elif prompt := st.chat_input():
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini", messages=st.session_state.messages, tools=tools
+            model="gpt-4o", messages=st.session_state.messages, tools=tools, temperature=0.4
         )
     except Exception as e:
         print(f"OpenAI API Error: {str(e)}")

@@ -38,7 +38,7 @@ class DataManager:
         Check if a space is available for the given time slot.
         
         Args:
-            space_type: 'dvorana', 'sala_za_sastanke', or 'ured'
+            space_type: 'dvorana' or 'sala_za_sastanke'
             date: Date in YYYY-MM-DD format
             start_time: Start time in HH:MM format
             end_time: End time in HH:MM format
@@ -46,7 +46,10 @@ class DataManager:
         Returns:
             str: Success or error message
         """
-        if space_type not in self._calendar:
+        if space_type == "ured":
+            return "Uredi se iznajmljuju isključivo na mjesečnoj bazi."
+        
+        if space_type not in ["dvorana", "sala_za_sastanke"]:
             return "Nepostojeći tip prostora."
             
         # Convert times to datetime objects for comparison
