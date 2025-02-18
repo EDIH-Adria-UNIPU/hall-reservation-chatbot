@@ -131,6 +131,8 @@ DODATNI ZAHTJEVI
 
 if st.session_state.reservation_completed:
     st.info("Rezervacija je završena.")
+    if st.chat_input():
+        st.chat_message("assistant").write("Vaša rezervacija je već završena. Ako želite napraviti novu rezervaciju, molimo vas osvježite stranicu.")
 elif prompt := st.chat_input():
     if not st.secrets["OPENAI_API_KEY"]:
         st.info("Please add your OpenAI API key to continue.")
