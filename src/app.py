@@ -179,7 +179,7 @@ elif prompt := st.chat_input():
 
         try:
             response = client.chat.completions.create(
-                model="gpt-4o-mini", messages=st.session_state.messages, tools=tools
+                model="gpt-4o", messages=st.session_state.messages, tools=tools
             )
         except Exception as e:
             print(f"OpenAI API Error: {str(e)}")
