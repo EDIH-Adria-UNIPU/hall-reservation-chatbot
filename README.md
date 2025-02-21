@@ -69,7 +69,6 @@ This project is part of a Test-before-invest (TBI) initiative for IDA, developed
 
 - Built with Streamlit for the web interface
 - Uses OpenAI's language models for natural language processing
-- Polars for efficient data handling
 - Implements function calling for availability checking and reservation management
 
 ## Limitations
