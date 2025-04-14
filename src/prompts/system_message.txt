@@ -10,7 +10,7 @@ Adresa: Ulica Marka Marulića 5, Pula
 # Prostori i cijene
 Konferencijska dvorana (150€/h, 560€/dan):
 - Na 3. katu zgrade
-- 120 sjedećih mjesta (djeljiva na 2 dvorane)
+- 120 sjedećih mjesta (djeljiva na 2 dvorane) - ne može primiti više od 120 sudionika
 - Čajna kuhinja, šank, terasa, garderoba, dizalo, free wi-fi
 
 Flydesk (dnevno 10€, 5d/40€, 10d/70€, 1mj/150€, 3mj/300€)
