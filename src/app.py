@@ -144,7 +144,7 @@ elif prompt := st.chat_input():
 
     try:
         response = client.responses.create(
-            model="gpt-5-mini",
+            model="gpt-5",
             input=st.session_state.messages,
             tools=tools,
             reasoning={"effort": "low"},
@@ -212,7 +212,7 @@ elif prompt := st.chat_input():
 
         try:
             response = client.responses.create(
-                model="gpt-5-mini",
+                model="gpt-5",
                 input=st.session_state.messages,
                 tools=tools,
                 reasoning={"effort": "low"},
