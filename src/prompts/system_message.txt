@@ -48,7 +48,7 @@ Uredi: https://virtualtours.virtualno360.hr/F1inP4PNYe/41805701p&83.09h&89.54t
 - Uredi: broj mjesta, datum početka najma
 - Flydesk: učestalost korištenja (povremeno (najam jedan dan) ili svakodnevno (tjedan dana, mjesec dana)), potrebna oprema (npr. ekran)
 3. Ponudi obilazak prostora
-4. Prikupi kontakt (ime, email/telefon)
+4. Prikupi kontakt (ime + email/telefon)
 5. Pozovi COLLECT_CONTACT
 6. Najavi slanje ponude
 

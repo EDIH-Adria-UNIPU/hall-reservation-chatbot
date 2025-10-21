@@ -1,22 +1,19 @@
+import json
+import os
+from datetime import datetime
+
+import pytz
 import streamlit as st
 from openai import OpenAI
-import os
-import json
-from datetime import datetime
-import pytz
 
-from utils import prepare_prompt, get_available_tools
 from data_manager import DataManager
 from functions import ChatFunctions
+from utils import get_available_tools, prepare_prompt
 
 # Create calendar.json if it doesn't exist
 calendar_path = "calendar.json"
 if not os.path.exists(calendar_path):
-    initial_calendar = {
-        "dvorana": {},
-        "sala_za_sastanke": {},
-        "ured": {}
-    }
+    initial_calendar = {"dvorana": {}, "sala_za_sastanke": {}, "ured": {}}
     with open(calendar_path, "w") as f:
         json.dump(initial_calendar, f)
 
@@ -51,7 +48,7 @@ if "messages" not in st.session_state:
     st.session_state.messages.append(initial_assistant_msg)
 
 for msg in st.session_state.messages:
-    if isinstance(msg, dict) and msg["role"] in ["user", "assistant"]:
+    if isinstance(msg, dict) and "role" in msg and msg["role"] in ["user", "assistant"]:
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
             # Show parking image if assistant mentions parking
@@ -61,6 +58,7 @@ for msg in st.session_state.messages:
 # Add reservation_completed flag to session state if not present
 if "reservation_completed" not in st.session_state:
     st.session_state.reservation_completed = False
+
 
 def handle_function_call(manager, function_name, arguments):
     if function_name == ChatFunctions.COLLECT_CONTACT.value:
@@ -72,14 +70,14 @@ def handle_function_call(manager, function_name, arguments):
             arguments.get("requirements"),
         )
         print("\nContact information collected:", result)
-        
+
         # Set reservation completed flag
         st.session_state.reservation_completed = True
-        
+
         # Get current time in CET
-        cet = pytz.timezone('CET')
+        cet = pytz.timezone("CET")
         current_time_cet = datetime.now(cet)
-        
+
         # Create formatted text content for the current reservation
         reservation_text = f"""DETALJI REZERVACIJE
 ========================
@@ -99,29 +97,28 @@ DODATNI ZAHTJEVI
                 reservation_text += f"\n{key}: {value}"
         else:
             reservation_text += "\nNema dodatnih zahtjeva"
-        
+
         # Create download button
         st.download_button(
             label="Preuzmi detalje rezervacije",
             data=reservation_text,
             file_name=f"rezervacija_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
-            mime='text/plain'
+            mime="text/plain",
         )
-        
+
         return result
     elif function_name == ChatFunctions.CHECK_AVAILABILITY.value:
         result = manager.check_availability(
             arguments.get("space_type"),
             arguments.get("date"),
             arguments.get("start_time"),
-            arguments.get("end_time")
+            arguments.get("end_time"),
         )
         print("\nAvailability check result:", result)
         return result
     elif function_name == ChatFunctions.GET_AVAILABLE_SLOTS.value:
         available_slots = manager.get_available_slots(
-            arguments.get("space_type"),
-            arguments.get("date")
+            arguments.get("space_type"), arguments.get("date")
         )
         slots_text = ", ".join([f"{start}-{end}" for start, end in available_slots])
         print("\nAvailable slots:", available_slots)
@@ -129,10 +126,13 @@ DODATNI ZAHTJEVI
     else:
         raise ValueError(f"Function '{function_name}' not found.")
 
+
 if st.session_state.reservation_completed:
     st.info("Rezervacija je završena.")
     if st.chat_input():
-        st.chat_message("assistant").write("Vaša rezervacija je već završena. Ako želite napraviti novu rezervaciju, molimo vas osvježite stranicu.")
+        st.chat_message("assistant").write(
+            "Vaša rezervacija je već završena. Ako želite napraviti novu rezervaciju, molimo vas osvježite stranicu."
+        )
 elif prompt := st.chat_input():
     if not st.secrets["OPENAI_API_KEY"]:
         st.info("Please add your OpenAI API key to continue.")
@@ -143,55 +143,109 @@ elif prompt := st.chat_input():
     st.chat_message("user").write(prompt)
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-4.1", messages=st.session_state.messages, tools=tools, temperature=0.4
+        response = client.responses.create(
+            model="gpt-5",
+            input=st.session_state.messages,
+            tools=tools,
+            reasoning={"effort": "low"},
+            text={"verbosity": "low"},
         )
     except Exception as e:
         print(f"OpenAI API Error: {str(e)}")
-        st.error("Oprostite, došlo je do tehničke poteškoće. Molim vas osvježite stranicu i pokušajte ponovno.")
+        st.error(
+            "Oprostite, došlo je do tehničke poteškoće. Molim vas osvježite stranicu i pokušajte ponovno."
+        )
         st.stop()
 
-    if response.choices[0].message.content is not None:
-        msg = response.choices[0].message.content
-        st.session_state.messages.append({"role": "assistant", "content": msg})
-        with st.chat_message("assistant"):
-            st.write(msg)
-            if "parking" in msg.lower():
-                st.image("src/assets/parking.png", caption="Parking lokacija")
-    elif response.choices[0].message.tool_calls:
-        # Store the assistant's message with tool calls
-        st.session_state.messages.append(response.choices[0].message)
-        
-        # Handle all tool calls in the response
-        for tool_call in response.choices[0].message.tool_calls:
-            function_name = tool_call.function.name
-            arguments = json.loads(tool_call.function.arguments)
-            print(f"\nCall function {function_name} with arguments: {arguments}")
-            
-            result = handle_function_call(manager, function_name, arguments)
-            
-            # Add the tool response message
-            st.session_state.messages.append({
-                "role": "tool",
-                "content": str(result),
-                "tool_call_id": tool_call.id,
-            })
+    # Check if response contains text content or function calls
+    has_text_content = False
+    has_function_calls = False
+
+    # First pass: check what types of items we have
+    for item in response.output:
+        if item.type == "message":
+            has_text_content = True
+        elif item.type == "function_call":
+            has_function_calls = True
+
+    # Second pass: handle the response based on what we found
+    if has_text_content and not has_function_calls:
+        # Simple text response - display it
+        for item in response.output:
+            if item.type == "message":
+                # item.content is a list of ResponseOutputText objects
+                # Extract the text from each item
+                msg_parts = [
+                    part.text for part in item.content if hasattr(part, "text")
+                ]
+                msg = " ".join(msg_parts)
+                st.session_state.messages.append({"role": "assistant", "content": msg})
+                with st.chat_message("assistant"):
+                    st.write(msg)
+                    if "parking" in msg.lower():
+                        st.image("src/assets/parking.png", caption="Parking lokacija")
+    elif has_function_calls:
+        # Append the output to messages (including any reasoning/function calls)
+        st.session_state.messages += response.output
+
+        # Handle all function calls in the response
+        for item in response.output:
+            if item.type == "function_call":
+                function_name = item.name
+                arguments = json.loads(item.arguments)
+                print(f"\nCall function {function_name} with arguments: {arguments}")
+
+                result = handle_function_call(manager, function_name, arguments)
+
+                # Add the function call output
+                st.session_state.messages.append(
+                    {
+                        "type": "function_call_output",
+                        "call_id": item.call_id,
+                        "output": str(result),
+                    }
+                )
+
+        # If reservation is completed (collect_contact was called), don't make another API call
+        if st.session_state.reservation_completed:
+            st.stop()
 
         try:
-            response = client.chat.completions.create(
-                model="gpt-4.1", messages=st.session_state.messages, tools=tools
+            response = client.responses.create(
+                model="gpt-5",
+                input=st.session_state.messages,
+                tools=tools,
+                reasoning={"effort": "low"},
+                text={"verbosity": "low"},
             )
         except Exception as e:
             print(f"OpenAI API Error: {str(e)}")
-            st.error("Oprostite, došlo je do tehničke poteškoće. Molim vas osvježite stranicu i pokušajte ponovno.")
+            st.error(
+                "Oprostite, došlo je do tehničke poteškoće. Molim vas osvježite stranicu i pokušajte ponovno."
+            )
             st.stop()
 
-        if response.choices[0].message.content is not None:
-            msg = response.choices[0].message.content
-            st.session_state.messages.append({"role": "assistant", "content": msg})
-            with st.chat_message("assistant"):
-                st.write(msg)
-                if "parking" in msg.lower():
-                    st.image("src/assets/parking.png", caption="Parking lokacija")
+        # Process the final response
+        for item in response.output:
+            if item.type == "message":
+                # item.content is a list of ResponseOutputText objects
+                # Extract the text from each item
+                msg_parts = [
+                    part.text for part in item.content if hasattr(part, "text")
+                ]
+                msg = " ".join(msg_parts)
+                st.session_state.messages.append({"role": "assistant", "content": msg})
+                with st.chat_message("assistant"):
+                    st.write(msg)
+                    if "parking" in msg.lower():
+                        st.image("src/assets/parking.png", caption="Parking lokacija")
     else:
-        raise ValueError("No response from OpenAI API")
+        # No text or function calls - this might be just reasoning
+        # Log the response for debugging
+        print(
+            f"Unexpected response format. Output types: {[item.type for item in response.output]}"
+        )
+        st.error(
+            "Oprostite, došlo je do tehničke poteškoće. Molim vas osvježite stranicu i pokušajte ponovno."
+        )
+        st.stop()

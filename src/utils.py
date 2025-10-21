@@ -45,11 +45,10 @@ def get_available_tools() -> list:
     return [
         {
             "type": "function",
-            "function": {
-                "name": ChatFunctions.COLLECT_CONTACT.value,
-                "description": "Collects contact information from the user for sending an offer",
-                "strict": True,
-                "parameters": {
+            "name": ChatFunctions.COLLECT_CONTACT.value,
+            "description": "Collects contact information from the user for sending an offer",
+            "strict": True,
+            "parameters": {
                     "type": "object",
                     "required": ["name", "contact_type", "contact_value", "space_type", "requirements"],
                     "properties": {
@@ -116,15 +115,13 @@ def get_available_tools() -> list:
                     },
                     "additionalProperties": False,
                 },
-            },
         },
         {
             "type": "function",
-            "function": {
-                "name": ChatFunctions.CHECK_AVAILABILITY.value,
-                "description": "Checks if a space is available for the specified date and time",
-                "strict": True,
-                "parameters": {
+            "name": ChatFunctions.CHECK_AVAILABILITY.value,
+            "description": "Checks if a space is available for the specified date and time",
+            "strict": True,
+            "parameters": {
                     "type": "object",
                     "required": ["space_type", "date", "start_time", "end_time"],
                     "properties": {
@@ -148,15 +145,13 @@ def get_available_tools() -> list:
                     },
                     "additionalProperties": False,
                 }
-            }
         },
         {
             "type": "function",
-            "function": {
-                "name": ChatFunctions.GET_AVAILABLE_SLOTS.value,
-                "description": "Gets all available time slots for a specific space on a given date",
-                "strict": True,
-                "parameters": {
+            "name": ChatFunctions.GET_AVAILABLE_SLOTS.value,
+            "description": "Gets all available time slots for a specific space on a given date",
+            "strict": True,
+            "parameters": {
                     "type": "object",
                     "required": ["space_type", "date"],
                     "properties": {
@@ -172,6 +167,5 @@ def get_available_tools() -> list:
                     },
                     "additionalProperties": False,
                 }
-            }
         }
     ]
